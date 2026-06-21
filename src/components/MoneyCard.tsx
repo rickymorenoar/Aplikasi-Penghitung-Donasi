@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Plus, Minus } from 'lucide-react-native';
 import { MoneyConfig } from '../types';
 
 interface MoneyCardProps {
@@ -13,39 +14,31 @@ export default function MoneyCard({ money, count, onIncrement, onDecrement }: Mo
   const isSelected = count > 0;
 
   return (
-    <View style={[styles.moneyCard, isSelected && { borderColor: money.color, borderWidth: 1.5 }]}>
-      <View style={styles.moneyInfo}>
-        <View style={[styles.avatarMoney, { backgroundColor: `${money.color}20` }]}>
-          <Text style={[styles.avatarText, { color: money.color }]}>Rp</Text>
-        </View>
-        <View>
-          <Text style={styles.moneyLabel}>{money.label}</Text>
-          <Text style={styles.moneySubtotal}>
-            Sub: <Text style={styles.whiteText}>Rp {(money.value * count).toLocaleString('id-ID')}</Text>
-          </Text>
-        </View>
+    <View style={[styles.card, isSelected && styles.cardActive]}>
+      <View style={styles.infoArea}>
+        <Text style={styles.label}>{money.label}</Text>
+        <Text style={styles.subtotal}>
+          Rp {(money.value * count).toLocaleString('id-ID')}
+        </Text>
       </View>
 
-      <View style={styles.controller}>
+      <View style={styles.controls}>
         <TouchableOpacity 
-          style={[styles.actionButton, styles.minusBtn, count === 0 && styles.disabledBtn]} 
+          style={[styles.btn, count === 0 && styles.btnDisabled]} 
           onPress={() => onDecrement(money.value)}
           disabled={count === 0}
         >
-          <Text style={[styles.buttonText, { color: count > 0 ? '#f43f5e' : '#475569' }]}>−</Text>
+          <Minus color={count > 0 ? '#fafafa' : '#3f3f46'} size={14} strokeWidth={2.5} />
         </TouchableOpacity>
         
-        <View style={[styles.countContainer, isSelected && { backgroundColor: `${money.color}15` }]}>
-          <Text style={[styles.countText, isSelected && { color: money.color, fontWeight: '800' }]}>
+        <View style={styles.countWrapper}>
+          <Text style={[styles.countText, isSelected && styles.countTextActive]}>
             {count}
           </Text>
         </View>
         
-        <TouchableOpacity 
-          style={[styles.actionButton, { backgroundColor: money.color }]} 
-          onPress={() => onIncrement(money.value)}
-        >
-          <Text style={[styles.buttonText, { color: '#ffffff' }]}>+</Text>
+        <TouchableOpacity style={styles.btn} onPress={() => onIncrement(money.value)}>
+          <Plus color="#fafafa" size={14} strokeWidth={2.5} />
         </TouchableOpacity>
       </View>
     </View>
@@ -53,27 +46,31 @@ export default function MoneyCard({ money, count, onIncrement, onDecrement }: Mo
 }
 
 const styles = StyleSheet.create({
-  moneyCard: {
-    backgroundColor: '#1e293b',
-    borderRadius: 20,
-    padding: 14,
-    marginBottom: 12,
+  card: {
+    backgroundColor: '#18181b',
+    borderRadius: 14,
+    padding: 16,
+    marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#334155',
+    borderWidth: 1,
+    borderColor: '#27272a',
   },
-  moneyInfo: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  avatarMoney: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center', marginRight: 14 },
-  avatarText: { fontSize: 16, fontWeight: 'bold' },
-  moneyLabel: { color: '#f8fafc', fontSize: 16, fontWeight: '700' },
-  moneySubtotal: { color: '#94a3b8', fontSize: 12, marginTop: 3 },
-  whiteText: { color: '#34d399', fontWeight: '600' },
-  controller: { flexDirection: 'row', alignItems: 'center' },
-  actionButton: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', elevation: 2 },
-  minusBtn: { backgroundColor: '#334155' },
-  disabledBtn: { backgroundColor: '#1e293b', opacity: 0.3 },
-  buttonText: { fontSize: 20, fontWeight: 'bold' },
-  countContainer: { width: 44, alignItems: 'center', justifyContent: 'center', marginHorizontal: 6, paddingVertical: 4, borderRadius: 8 },
-  countText: { color: '#94a3b8', fontSize: 16, fontWeight: '600' },
+  cardActive: { borderColor: '#52525b' },
+  infoArea: { flex: 1 },
+  label: { color: '#fafafa', fontSize: 15, fontWeight: '600', letterSpacing: -0.2 },
+  subtotal: { color: '#71717a', fontSize: 12, marginTop: 4 },
+  controls: { flexDirection: 'row', alignItems: 'center' },
+  btn: {
+    backgroundColor: '#27272a',
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnDisabled: { backgroundColor: '#18181b', borderWidth: 1, borderColor: '#27272a' },
+  countWrapper: { width: 36, alignItems: 'center' },
+  countText: { color: '#52525b', fontSize: 14, fontWeight: '600' },
+  countTextActive: { color: '#fafafa', fontWeight: '700' },
 });

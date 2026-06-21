@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, SafeAreaView, StatusBar, Alert, View } from 'react-native';
+import { StyleSheet, ScrollView, SafeAreaView, StatusBar, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MoneyConfig, DonationHistory } from './src/types';
 import HeaderTotal from './src/components/HeaderTotal';
@@ -24,7 +24,6 @@ export default function App() {
   });
   const [history, setHistory] = useState<DonationHistory[]>([]);
 
-  // Ambil data riwayat yang tersimpan di HP pas aplikasi pertama kali dibuka
   useEffect(() => {
     loadSavedData();
   }, []);
@@ -36,7 +35,7 @@ export default function App() {
         setHistory(JSON.parse(savedHistory));
       }
     } catch (e) {
-      console.error("Gagal load data riwayat", e);
+      console.error(e);
     }
   };
 
@@ -63,14 +62,13 @@ export default function App() {
     setCounts({ 100000: 0, 50000: 0, 20000: 0, 10000: 0, 5000: 0, 2000: 0 });
   };
 
-  // FUNGSI UTAMA: Save data ke memori lokal HP/Browser secara permanen
   const saveToDatabase = async () => {
     const totalDonasi = calculateTotal();
     if (totalDonasi === 0) return;
 
     const today = new Date();
     const formattedDate = today.toLocaleDateString('id-ID', {
-      day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
     });
 
     const newLog: DonationHistory = {
@@ -83,13 +81,11 @@ export default function App() {
     const updatedHistory = [newLog, ...history];
     
     try {
-      // Kunci data ke AsyncStorage
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedHistory));
       setHistory(updatedHistory);
       resetCounter();
-      alert('Alhamdulillah! Data sukses disimpan permanen ke riwayat.');
     } catch (e) {
-      alert('Waduh, gagal mengamankan data ke storage.');
+      alert('Gagal mengamankan data.');
     }
   };
 
@@ -109,15 +105,9 @@ export default function App() {
       <HeaderTotal total={calculateTotal()} totalSheets={getTotalSheets()} />
 
       <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        {/* LIST RIWAYAT MASUK */}
         <HistoryList history={history} onClear={clearAllHistory} />
-
-        <View style={styles.dividerContainer}>
-          <View style={styles.dividerLine} />
-        </View>
-
-        {/* LIST PECAHAN COUNTER */}
-        <View style={{ paddingHorizontal: 16 }}>
+        <View style={styles.spacer} />
+        <View style={{ paddingHorizontal: 20 }}>
           {MONEY_LIST.map((money) => (
             <MoneyCard 
               key={money.value}
@@ -140,8 +130,7 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#0f172a' },
-  scrollContainer: { flex: 1, marginTop: 4 },
-  dividerContainer: { paddingHorizontal: 16, marginVertical: 8 },
-  dividerLine: { height: 1, backgroundColor: '#1e293b', width: '100%' }
+  safeArea: { flex: 1, backgroundColor: '#09090b' },
+  scrollContainer: { flex: 1 },
+  spacer: { height: 14 }
 });
